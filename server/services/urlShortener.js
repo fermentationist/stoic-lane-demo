@@ -4,8 +4,6 @@ import { API_SERVER_PORT, PROD_URL } from "../../vite.config.js";
 
 export const HOST_SITE = process.env.PROD_MODE === "true" ? PROD_URL : `http://localhost:${API_SERVER_PORT}`;
 
-console.log("process.env:", process.env)
-
 // given a url, check if it is already in the redirects table and if so, return corresponding shortened url (a uid generated from the integer id in the table). otherwise, create a new uid and use its integer equivalent as an id when inserting the url into the db; return new shortened url.
 export const shortenURL = async urlToShorten => {
   const existingUID = await getExistingUID(urlToShorten);
