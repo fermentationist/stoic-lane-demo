@@ -32,6 +32,7 @@
     "sqlite": "^4.1.2",
     "sqlite3": "^5.1.4",
     "styled-components": "^5.3.6",
+    "woke-dyno": "^1.0.0",
     "xss": "^1.0.14"
   },
   "devDependencies": {

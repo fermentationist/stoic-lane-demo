@@ -1,11 +1,13 @@
 import "dotenv/config";
 import express from "express";
+import wakeDyno from "woke-dyno";
 import { fileURLToPath } from "url";
 import path, { dirname } from "path";
 import router from "./routes/index.js";
 import rateLimiter from "./middleware/rateLimiter.js";
-import { API_SERVER_PORT } from "../vite.config.js";
+import { API_SERVER_PORT, PROD_URL } from "../vite.config.js";
 
+const WAKE_SERVER_INTERVAL = 1000 * 60 * 14; // 14 minutes
 const PROD_MODE = process.env.PROD_MODE === "true";
 const STATIC_FOLDER = PROD_MODE ? "../build/" : "../";
 const filename = fileURLToPath(import.meta.url);
@@ -23,6 +25,17 @@ app.use("/", rateLimiter, router);
 
 app.listen(API_SERVER_PORT, () => {
   console.log(`Express app listening on port ${API_SERVER_PORT}`);
+
+  const offset = 5;
+  const getOffsetHours = hours => (hours + offset) > 24 ? 24 - (hours + offset) : hours + offset;
+  const napStartHour = getOffsetHours(22);
+  const napEndHour = getOffsetHours(7)
+  wakeDyno({
+    url: PROD_URL,
+    interval: WAKE_SERVER_INTERVAL, 
+    startNap: [napStartHour, 0, 0, 0],
+    endNap: [napEndHour, 0, 0, 0]
+  }).start();
 });
 
 export default app;
