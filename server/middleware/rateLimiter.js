@@ -1,8 +1,8 @@
 import rateLimit from "express-rate-limit";
 
-const MAX_REQUESTS = 1; // limiting requests to 1 per ms, so our timestamp-based ids will be guaranteed to be unique
+const MAX_REQUESTS = 2; // limiting requests to 1 per ms, so our timestamp-based ids will be guaranteed to be unique
 const REQUEST_LIMIT_WINDOW = 1; // 1 ms
-const MAX_USER_REQUESTS = 30;
+const MAX_USER_REQUESTS = 60;
 const USER_REQUEST_LIMIT_WINDOW = 1000 * 60; // 1 minute
 
 const rate = MAX_REQUESTS / (REQUEST_LIMIT_WINDOW / (1000 * 60)); // rate per minute

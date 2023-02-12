@@ -7,8 +7,9 @@ import {
   expectInvalidInput,
   runDataValidationTests,
 } from "../../test/testHelpers.js";
-
 import assert from "assert";
+
+const sleep = (ms = 1000) => new Promise(resolve => setTimeout(resolve, ms));
 
 // helper functions
 const makeFetchRequest = (url) => {
@@ -18,21 +19,25 @@ const makeFetchRequest = (url) => {
   }).then((responseStream) => responseStream.json());
 };
 
-const makeShortenURLRequest = (url) => {
-  return fetch(`${HOST_SITE}/api/shorten-url`, {
+const makeShortenURLRequest = async (url) => {
+  const result = await fetch(`${HOST_SITE}/api/shorten-url`, {
     method: "post",
     body: JSON.stringify({ url }),
     headers: {
       "Content-Type": "application/json",
     },
   }).then((responseStream) => responseStream.json());
+  await sleep(2);
+  return result;
 };
 
 const testWithURL = async (url) => {
   const firstResponse = await makeShortenURLRequest(url);
+  console.log("firstResponse:", firstResponse)
   assert.strictEqual(firstResponse.status, "ok");
   assert(firstResponse.shortenedURL.includes(HOST_SITE));
   const secondResponse = await makeShortenURLRequest(url);
+  console.log("secondResponse:", secondResponse);
   assert.strictEqual(secondResponse.status, "ok");
   assert.strictEqual(secondResponse.shortenedURL, firstResponse.shortenedURL);
 };
@@ -124,9 +129,9 @@ describe("controllers", () => {
   it("rate limiting", async function () {
     this.timeout(10000);
     const testURL = "https://google.com/";
-    for (let i = 0; i < 18; i++) { // limit is 30 requests/user/minute - endpoint is called 12 times previously in these tests, so it should allow 18 more tries before rate limit kicks in
+    for (let i = 0; i < 21; i++) { // limit is 30 requests/user/minute - endpoint is called 8 times previously in these tests, so it should allow 21 more tries before rate limit kicks in
       const response = await makeShortenURLRequest(testURL);
     }
-    await expectError(makeShortenURLRequest(testURL));
+    await expectError(makeShortenURLRequest(testURL), "Rate limit exceeded");
   });
 });
