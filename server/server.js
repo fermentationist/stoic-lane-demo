@@ -19,7 +19,7 @@ app.use(express.json());
 const staticPath = path.join(dirName, STATIC_FOLDER);
 app.use(express.static(staticPath));
 
-app.use("/", rateLimiter, router);
+app.use("/", router);
 
 app.listen(API_SERVER_PORT, () => {
   console.log(`Express app listening on port ${API_SERVER_PORT}`);

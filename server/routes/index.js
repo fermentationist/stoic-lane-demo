@@ -4,6 +4,7 @@ import {
   redirectToFullURL,
   testController,
 } from "../controllers/index.js";
+import rateLimiter from "../middleware/rateLimiter.js";
 
 const router = Router();
 
@@ -14,6 +15,6 @@ router.get("/api/test", testController);
 router.get("/:redirectID", redirectToFullURL);
 
 // url shortening route
-router.post("/api/shorten-url", shortenURL);
+router.post("/api/shorten-url", ...rateLimiter, shortenURL);
 
 export default router;

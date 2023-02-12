@@ -2,7 +2,11 @@ import fetch from "node-fetch";
 import app from "../server.js"; // importing to start server
 import { HOST_SITE, uidToIntegerId } from "../services/urlShortener.js";
 import { randomInt, randomString } from "../../src/utils/helpers.js";
-import { expectError, expectInvalidInput, runDataValidationTests } from "../../test/testHelpers.js";
+import {
+  expectError,
+  expectInvalidInput,
+  runDataValidationTests,
+} from "../../test/testHelpers.js";
 
 import assert from "assert";
 
@@ -87,7 +91,7 @@ describe("controllers", () => {
   });
 
   it("/api/shorten-url POST - input validation", async function () {
-    this.timeout(5000)
+    this.timeout(5000);
     const invalidFields = {
       url: [
         "noprotocol.com",
@@ -103,18 +107,26 @@ describe("controllers", () => {
     });
   });
 
-  it("/:redirectID - attempted redirect of invalid short url returns 404 error", async function () {
+  it("/:redirectID GET - attempted redirect of invalid short url returns 404 error", async function () {
     this.timeout(5000);
     const badURL = `${HOST_SITE}/badurl666`;
     await expectError(makeFetchRequest(badURL), "Not found");
   });
 
-  it("/:redirectID - input validation", async function () {
+  it("/:redirectID GET - input validation", async function () {
     this.timeout(5000);
     let invalidURL = `${HOST_SITE}/${randomString(7)}`;
     await expectInvalidInput(makeFetchRequest(invalidURL));
     invalidURL = `${HOST_SITE}/${randomString(10)}`;
     await expectInvalidInput(makeFetchRequest(invalidURL));
-  })
+  });
 
+  it("rate limiting", async function () {
+    this.timeout(10000);
+    const testURL = "https://google.com/";
+    for (let i = 0; i < 18; i++) { // limit is 30 requests/user/minute - endpoint is called 12 times previously in these tests, so it should allow 18 more tries before rate limit kicks in
+      const response = await makeShortenURLRequest(testURL);
+    }
+    await expectError(makeShortenURLRequest(testURL));
+  });
 });

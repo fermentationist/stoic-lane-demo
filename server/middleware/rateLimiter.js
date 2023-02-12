@@ -12,14 +12,14 @@ const generalRateLimitConfig = {
   windowMs: REQUEST_LIMIT_WINDOW,
   max: MAX_REQUESTS,
   standardHeaders: true,
-  message: {name: "Rate limit exceeded", message: `Maximum of ${rate} requests per minute.`}
+  message: {error: {name: "Rate limit exceeded", message: `Maximum of ${rate} requests per minute.`}}
 }
 
 const userRateLimitConfig = {
   windowMs: USER_REQUEST_LIMIT_WINDOW,
   max: MAX_USER_REQUESTS,
   standardHeaders: true,
-  message: {error: `Too many requests from this user. Maximum of ${userRate} per minute.`},
+  message: {error: {name: "Rate limit exceeded", message: `Too many requests from this user. Maximum of ${userRate} per minute.`}},
   keyGenerator: (req, res) => {
     const ip = req.headers["x-forwarded-for"]?.split(",").shift() || req.socket.remoteAddress;
     return ip;
