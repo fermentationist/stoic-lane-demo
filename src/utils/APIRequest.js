@@ -4,7 +4,10 @@ export default class APIRequest {
   constructor(config) {
     this.config = config;
     this.config.body = config.body || config.data || null;
-    this.config.headers = config.headers || { Accept: "application/json", "Content-Type": "application/json" };
+    this.config.headers = config.headers || {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    };
     this.url = config.url;
     this.abortController = new AbortController();
     this.config.signal = this.abortController.signal;
@@ -43,6 +46,9 @@ export default class APIRequest {
     return this.fetchWithTimeout(this.url || requestConfig.url, requestConfig)
       .then((responseStream) => responseStream.json())
       .then((response) => {
+        if (response.status === "failed" && response.error) {
+          throw response.error;
+        }
         // log response
         console.log("RESPONSE:");
         console.log(response);
