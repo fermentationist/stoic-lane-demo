@@ -41,7 +41,7 @@ const shortenURLController = async (req, res) => {
 export const shortenURL = [shortenURLValidation, shortenURLController];
 
 const redirectToFullURLValidation = [
-  validate.param("redirectID").exists().isLength({ min: 8, max: 9 }),
+  validate.param("redirectID").exists().isLength({ min: 7, max: 8 }),
   validate.catchValidationErrors,
 ];
 

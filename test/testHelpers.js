@@ -1,6 +1,6 @@
 import assert from "assert";
 
-export const expectError = function (p, errorName, testDescription) {
+export const expectError = function (p, errorName, testDescription, debug = false) {
   let msg;
   if (errorName) {
     msg = `${
@@ -14,6 +14,7 @@ export const expectError = function (p, errorName, testDescription) {
   const namedError = new Error(msg);
   return p
     .then((data) => {
+      debug && console.log("data:", data)
       if (!data.error) {
         namedError.name = "no_error_thrown";
         return Promise.reject(namedError);

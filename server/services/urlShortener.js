@@ -4,21 +4,25 @@ import { API_SERVER_PORT, PROD_URL } from "../../vite.config.js";
 
 export const HOST_SITE = process.env.PROD_MODE === "true" ? PROD_URL : `http://localhost:${API_SERVER_PORT}`;
 
+const ENCODED_CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
 // given a url, check if it is already in the redirects table and if so, return corresponding shortened url (a uid generated from the integer id in the table). otherwise, create a new uid and use its integer equivalent as an id when inserting the url into the db; return new shortened url.
 export const shortenURL = async urlToShorten => {
   const existingUID = await getExistingUID(urlToShorten);
   if (existingUID) {
     return `${HOST_SITE}/${existingUID}`;
   }
-  const uid = generateUID();
-  await addURLToDB(urlToShorten, uid);
+  const timestamp = Date.now();
+  // uid is unique, as long as this function is not called more than once per millisecond, as it is based on the current Unix timestamp
+  const uid = integerToEncodedString(timestamp);
+  await addURLToDB(urlToShorten, timestamp);
   return `${HOST_SITE}/${uid}`;
 }
 
 // given a shortened url (uid), convert to integer id and return corresponding url from db
 export const getFullURL = async shortenedURL => {
   const uid = shortenedURL.replace("/", "");
-  const integerId = uidToIntegerId(uid);
+  const integerId = encodedStringToInteger(uid);
   const selectQuery = `
     SELECT url FROM redirects WHERE id = ?
   `;
@@ -29,15 +33,32 @@ export const getFullURL = async shortenedURL => {
 // this function will return an id that is unique, given that it is not called more than once per millisecond, as it is based on the current Unix timestamp
 export const generateUID = () =>  Date.now().toString(36);
 
-// convert base36 uid (used in shortened url) into integer id (used in db)
-export const uidToIntegerId = uid => parseInt(uid, 36);
+// convert base62 uid (used in shortened url) into integer id (used in db)
+export const encodedStringToInteger = uid => {
+  let multiplier = 1;
+  const base = ENCODED_CHARS.length;
+  const integer = uid.split("").reverse().reduce((accum, digit) => {
+    const integerEquivalent = ENCODED_CHARS.indexOf(digit) * multiplier;
+    multiplier *= base;
+    return accum + integerEquivalent;
+  }, 0);
+  return integer;
+}
 
-// convert integer id (used as id in db) to base36 uid (used in shortened url)
-export const integerIdToUID = integerId => integerId.toString(36);
+// convert integer id (used as id in db) to base62 uid (used in shortened url)
+export const integerToEncodedString = integer => {
+  const base = ENCODED_CHARS.length;
+  const output = [];
+  while(integer) {
+    const remainder = integer % base;
+    integer = Math.floor(integer / base);
+    output.unshift(ENCODED_CHARS[remainder]);
+  }
+  return output.join("");
+};
 
 // insert url into redirects table, using Unix timestamp as integer id (primary key)
-export const addURLToDB = (url, uid) => {
-  const integerId = uidToIntegerId(uid);
+export const addURLToDB = (url, integerId) => {
   const insertQuery = `
     INSERT INTO redirects (id, url)
     VALUES (?, ?);
@@ -51,6 +72,6 @@ export const getExistingUID = async url => {
     SELECT id FROM redirects WHERE url = ?;
   `;
   const existingResult = await db.get(selectQuery, [url]);
-  return existingResult ? integerIdToUID(existingResult.id) : null;
+  return existingResult ? integerToEncodedString(existingResult.id) : null;
   
 }

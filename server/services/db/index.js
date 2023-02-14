@@ -12,8 +12,8 @@ const db = await open(config);
 
 const createTable = `
   CREATE TABLE IF NOT EXISTS redirects(
-    id BIGINT PRIMARY KEY NOT NULL,
-    url VARCHAR(2048) NOT NULL UNIQUE
+    id INTEGER PRIMARY KEY NOT NULL,
+    url TEXT NOT NULL UNIQUE
   );
 `;
 
