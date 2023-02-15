@@ -30,9 +30,6 @@ export const getFullURL = async shortenedURL => {
   return result?.url || null;
 }
 
-// this function will return an id that is unique, given that it is not called more than once per millisecond, as it is based on the current Unix timestamp
-export const generateUID = () =>  Date.now().toString(36);
-
 // convert base62 uid (used in shortened url) into integer id (used in db)
 export const encodedStringToInteger = uid => {
   let multiplier = 1;
