@@ -62,7 +62,6 @@ const Home = ({ startLoading, doneLoading }) => {
   useEffect(() => {
     doneLoading();
   }, []);
-  console.log("rendering Home...");
 
   const validateURL = (url) => {
     const regex =
@@ -117,7 +116,6 @@ const Home = ({ startLoading, doneLoading }) => {
   };
 
   const onKeyDown = event => {
-    console.log("event.key:", event.key)
     if (event.key === "Enter" && inputRef.current.value) {
       submit(event);
     }

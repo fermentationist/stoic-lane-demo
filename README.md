@@ -16,7 +16,7 @@ A URL shortener made by [Dennis Hodges](https://dennis-hodges.com).
 
 ## Description
 * **Data Storage**: 
-**Implementation**: For the sake of simplicity and portability (I didn't want the user to have to configure a local env among other things), a SQLite database was used. A simple table, named redirects, was used:
+**Implementation**: For the sake of simplicity and portability (I didn't want the user to have to configure a local env among other things), I chose a SQLite database. A simple table, named redirects, was used:
 `
 CREATE TABLE IF NOT EXISTS redirects(
     id INTEGER PRIMARY KEY NOT NULL,

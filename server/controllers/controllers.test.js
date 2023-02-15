@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 import app from "../server.js"; // importing to start server
-import { HOST_SITE, encodedStringToInteger } from "../services/urlShortener.js";
+import { HOST_SITE } from "../services/urlShortener.js";
 import { randomInt, randomString } from "../../src/utils/helpers.js";
 import {
   expectError,
@@ -8,8 +8,6 @@ import {
   runDataValidationTests,
 } from "../../test/testHelpers.js";
 import assert from "assert";
-
-const sleep = (ms = 1000) => new Promise(resolve => setTimeout(resolve, ms));
 
 // helper functions
 const makeFetchRequest = (url) => {
@@ -27,17 +25,14 @@ const makeShortenURLRequest = async (url) => {
       "Content-Type": "application/json",
     },
   }).then((responseStream) => responseStream.json());
-  await sleep(2);
   return result;
 };
 
 const testWithURL = async (url) => {
   const firstResponse = await makeShortenURLRequest(url);
-  console.log("firstResponse:", firstResponse)
   assert.strictEqual(firstResponse.status, "ok");
   assert(firstResponse.shortenedURL.includes(HOST_SITE));
   const secondResponse = await makeShortenURLRequest(url);
-  console.log("secondResponse:", secondResponse);
   assert.strictEqual(secondResponse.status, "ok");
   assert.strictEqual(secondResponse.shortenedURL, firstResponse.shortenedURL);
 };
@@ -54,7 +49,6 @@ const testRedirectWithURL = async (url) => {
 
   // get test data from new shortened url
   const testResponse = await makeFetchRequest(shortenedURL);
-  console.log("testResponse:", testResponse)
   assert.strictEqual(typeof testResponse.randomTestNumber, "number");
   // shortened url should return same data as original url (because it is a redirect to the original)
   assert.strictEqual(
@@ -74,7 +68,6 @@ describe("controllers", () => {
   it("/api/shorten-url POST - basic tests (same url always returns same short url)", async function () {
     this.timeout(5000);
     const urlsToTest = [
-      "https://hotdogisasandwich.com",
       "http://hotdogisasandwich.com",
       "https://dennis-hodges.com",
     ];
@@ -115,7 +108,7 @@ describe("controllers", () => {
   it("/:redirectID GET - attempted redirect of invalid short url returns 404 error", async function () {
     this.timeout(5000);
     const badURL = `${HOST_SITE}/badurl1`;
-    await expectError(makeFetchRequest(badURL), "Not found", null, true);
+    await expectError(makeFetchRequest(badURL), "Not found");
   });
 
   it("/:redirectID GET - input validation", async function () {
@@ -126,12 +119,13 @@ describe("controllers", () => {
     await expectInvalidInput(makeFetchRequest(invalidURL));
   });
 
-  // it("rate limiting", async function () {
-  //   this.timeout(10000);
-  //   const testURL = "https://google.com/";
-  //   for (let i = 0; i < 21; i++) { // limit is 30 requests/user/minute - endpoint is called 8 times previously in these tests, so it should allow 21 more tries before rate limit kicks in
-  //     const response = await makeShortenURLRequest(testURL);
-  //   }
-  //   await expectError(makeShortenURLRequest(testURL), "Rate limit exceeded");
-  // });
+  it("rate limiting", async function () {
+    this.timeout(10000);
+    const testURL = "https://google.com/";
+    for (let i = 0; i < 15; i++) {
+      const response = await makeShortenURLRequest(testURL);
+      assert.strictEqual(response.status, "ok");
+    }
+    await expectError(makeShortenURLRequest(testURL), "Rate limit exceeded");
+  });
 });

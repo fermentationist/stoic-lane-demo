@@ -18,7 +18,8 @@ export default defineConfig(({ command, mode }) => {
       port: DEV_SERVER_PORT,
       proxy: {
         "/api": {
-          target: `http://localhost:${API_SERVER_PORT}/`,
+          // To test with alternate API, change target
+          target: `http://127.0.0.1:${API_SERVER_PORT}/`,
           changeOrigin: true,
           secure: false
         }
