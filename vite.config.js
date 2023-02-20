@@ -4,7 +4,7 @@ import react from "@vitejs/plugin-react";
 
 export const DEV_SERVER_PORT = 3000;
 export const API_SERVER_PORT = 4000;
-export const PROD_URL = "https://stoic.onrender.com";
+export const PROD_URL = "https://urly.onrender.com";
 
 export default defineConfig(({ command, mode }) => {
   return {

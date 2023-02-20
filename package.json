@@ -1,6 +1,6 @@
 {
-  "name": "stoic-lane-demo",
-  "private": true,
+  "name": "urly",
+  "private": false,
   "version": "0.0.1",
   "author": {
     "email": "dennis.m.hodges@gmail.com",

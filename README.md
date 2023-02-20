@@ -1,4 +1,4 @@
-# stoic-lane-demo
+# urly
 ---
 
 A URL shortener made by [Dennis Hodges](https://dennis-hodges.com).

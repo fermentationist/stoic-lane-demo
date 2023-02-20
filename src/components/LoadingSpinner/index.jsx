@@ -1,19 +1,19 @@
 import React from "react";
 import styled from "styled-components";
-import logo from "../../assets/stoiclane-logo.png";
+// import logo from "../../assets/logo.png";
 
 const Container = styled.div`
   position: relative;
   display: flex;
 `;
 
-const Image = styled.img`
-  position: absolute;
-  width: 90px;
-  z-index: 10;
-  top: 45px;
-  left: 5px;
-`;
+// const Image = styled.img`
+//   position: absolute;
+//   width: 90px;
+//   z-index: 10;
+//   top: 45px;
+//   left: 5px;
+// `;
 
 const SpinningBorder = styled.div`
   position: relative;
@@ -39,7 +39,7 @@ const SpinningBorder = styled.div`
 const LoadingSpinner = (props) => {
   return (
     <Container className={props.className ? props.className : ""}>
-      <Image src={logo} />
+      {/* <Image src={logo} /> */}
       <SpinningBorder role="status"></SpinningBorder>
     </Container>
   );
