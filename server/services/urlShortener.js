@@ -34,7 +34,7 @@ export const getFullURL = async shortenedURL => {
 export const encodedStringToInteger = uid => {
   let multiplier = 1;
   const base = ENCODED_CHARS.length;
-  const integer = uid.split("").reverse().reduce((accum, digit) => {
+  const integer = [...uid].reverse().reduce((accum, digit) => {
     const integerEquivalent = ENCODED_CHARS.indexOf(digit) * multiplier;
     multiplier *= base;
     return accum + integerEquivalent;
@@ -47,11 +47,11 @@ export const integerToEncodedString = integer => {
   const base = ENCODED_CHARS.length;
   const output = [];
   while(integer) {
-    const remainder = integer % base;
+    const remainder = integer % base === base ? 0 : integer % base;
     integer = Math.floor(integer / base);
     output.unshift(ENCODED_CHARS[remainder]);
   }
-  return output.join("");
+  return output.join("") || "0";
 };
 
 // insert url into redirects table, using Unix timestamp as integer id (primary key)
