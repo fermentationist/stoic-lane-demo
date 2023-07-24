@@ -26,16 +26,16 @@ app.use("/", rateLimiter, router);
 app.listen(API_SERVER_PORT, () => {
   console.log(`Express app listening on port ${API_SERVER_PORT}`);
 
-  const offset = 5;
-  const getOffsetHours = hours => (hours + offset) > 24 ? Math.abs(24 - (hours + offset)) : hours + offset;
-  const napStartHour = getOffsetHours(18);
-  const napEndHour = getOffsetHours(8)
-  wakeDyno({
-    url: PROD_URL,
-    interval: WAKE_SERVER_INTERVAL, 
-    startNap: [napStartHour, 0, 0, 0],
-    endNap: [napEndHour, 0, 0, 0]
-  }).start();
+  // const offset = 5;
+  // const getOffsetHours = hours => (hours + offset) > 24 ? Math.abs(24 - (hours + offset)) : hours + offset;
+  // const napStartHour = getOffsetHours(18);
+  // const napEndHour = getOffsetHours(8)
+  // wakeDyno({
+  //   url: PROD_URL,
+  //   interval: WAKE_SERVER_INTERVAL, 
+  //   startNap: [napStartHour, 0, 0, 0],
+  //   endNap: [napEndHour, 0, 0, 0]
+  // }).start();
 });
 
 export default app;
